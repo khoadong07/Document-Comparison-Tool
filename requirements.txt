@@ -1,0 +1,10 @@
+flask
+python-dotenv
+openai
+pdf2docx
+unidecode
+pdf2image
+pytesseract
+markdown
+python-docx
+beautifulsoup4
