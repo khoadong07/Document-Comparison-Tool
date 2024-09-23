@@ -171,4 +171,4 @@ def upload_and_compare():
     return render_template('compare.html', text1=None, text2=None)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False, host="0.0.0.0")
