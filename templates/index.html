@@ -14,8 +14,9 @@
         }
 
         /* Centered spinner */
-        .spinner-border {
-            display: none;
+        .spinner-border,
+        .loading-message {
+            display: none; /* Ẩn spinner và thông báo loading ban đầu */
             margin: 20px auto;
         }
 
@@ -91,11 +92,11 @@
             <form id="uploadForm" method="post" enctype="multipart/form-data" class="d-flex flex-column align-items-center">
                 <div class="mb-3 w-100">
                     <label for="file1" class="form-label">Select the original document (*.docx):</label>
-                    <input type="file" name="file1" id="file1" class="form-control" required>
+                    <input type="file" name="file1" id="file1" class="form-control" accept=".docx" required>
                 </div>
                 <div class="mb-3 w-100">
                     <label for="file2" class="form-label">Select the modified document (*.pdf):</label>
-                    <input type="file" name="file2" id="file2" class="form-control" required>
+                    <input type="file" name="file2" id="file2" class="form-control" accept=".pdf" required>
                 </div>
                 <button type="submit" class="btn btn-primary">Compare Documents</button>
             </form>
@@ -103,6 +104,11 @@
             <!-- Loading Spinner -->
             <div id="spinner" class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
+            </div>
+
+            <!-- Loading Message -->
+            <div id="loadingMessage" class="loading-message text-center">
+                <p class="text-muted">Comparing documents, please wait...</p>
             </div>
         </div>
 
@@ -135,22 +141,48 @@
     <script>
         const file1Content = document.getElementById('file1-content');
         const file2Content = document.getElementById('file2-content');
+        const spinner = document.getElementById('spinner');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const uploadForm = document.getElementById('uploadForm');
 
         function syncScroll(source, target) {
             target.scrollTop = source.scrollTop;
         }
 
-        file1Content.addEventListener('scroll', () => {
+        file1Content?.addEventListener('scroll', () => {
             syncScroll(file1Content, file2Content);
         });
 
-        file2Content.addEventListener('scroll', () => {
+        file2Content?.addEventListener('scroll', () => {
             syncScroll(file2Content, file1Content);
         });
 
-        // Show the spinner when the form is submitted
-        document.getElementById('uploadForm').onsubmit = function() {
-            document.getElementById('spinner').style.display = 'block';
+        // Show the spinner and loading message when the form is submitted
+        uploadForm.onsubmit = function() {
+            const file1 = document.getElementById('file1').files[0];
+            const file2 = document.getElementById('file2').files[0];
+
+            // Validate file 1 (should be .docx)
+            if (file1 && file1.name.split('.').pop().toLowerCase() !== 'docx') {
+                alert('File 1 must be a .docx file.');
+                return false;
+            }
+
+            // Validate file 2 (should be .pdf)
+            if (file2 && file2.name.split('.').pop().toLowerCase() !== 'pdf') {
+                alert('File 2 must be a .pdf file.');
+                return false;
+            }
+
+            // Hiển thị spinner và thông báo
+            spinner.style.display = 'block';
+            loadingMessage.style.display = 'block';
+        };
+
+        // Hide the spinner and loading message when the page loads (in case of form reload)
+        window.onload = function() {
+            spinner.style.display = 'none';
+            loadingMessage.style.display = 'none';
         };
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
